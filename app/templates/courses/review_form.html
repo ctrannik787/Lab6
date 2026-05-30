@@ -1,0 +1,34 @@
+{% if current_user.is_authenticated %}
+    {% if user_review %}
+        <div class="border rounded p-3">
+            <h5 class="mb-3">Ваш отзыв</h5>
+            <div class="d-flex align-items-center mb-2">
+                <strong>{{ current_user.full_name }}</strong>
+                <span class="ms-auto rating">★ {{ user_review.rating }}</span>
+            </div>
+            <p class="text-muted mb-2">{{ user_review.created_at.strftime('%d.%m.%Y %H:%M') }}</p>
+            <p class="mb-0">{{ user_review.text }}</p>
+        </div>
+    {% else %}
+        <form method="post" action="{{ url_for('courses.create_review', course_id=course.id) }}">
+            <h5 class="mb-3">Оставить отзыв</h5>
+            <div class="mb-3">
+                <label for="rating" class="form-label">Оценка</label>
+                <select class="form-select" id="rating" name="rating" required>
+                    {% for value, label in rating_choices %}
+                        <option value="{{ value }}" {% if value == 5 %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="review-text" class="form-label">Текст отзыва</label>
+                <textarea class="form-control" id="review-text" name="text" rows="5" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-dark">Сохранить отзыв</button>
+        </form>
+    {% endif %}
+{% else %}
+    <div class="alert alert-info mb-0">
+        Чтобы оставить отзыв, необходимо <a href="{{ url_for('auth.login', next=request.url) }}">войти</a>.
+    </div>
+{% endif %}
